@@ -13,18 +13,13 @@ from pathlib import Path
 from datetime import datetime
 import time
 
+
 @Cache(
     cache_path=[
         "model_histories/{cell_line}/{task}/{model_name}/{use_feature_selection}/history_{_hash}.csv.xz",
-        "model_performance/{cell_line}/{task}/{model_name}/{use_feature_selection}/performance_{_hash}.csv.xz",
-        "model_histories/{cell_line}/{task}/{model_name}/{use_feature_selection}/history_{_hash}.csv.xz",
-        "model_performance/{cell_line}/{task}/{model_name}/{use_feature_selection}/performance_{_hash}.csv.xz",
-        "model_histories/{cell_line}/{task}/{model_name}/{use_feature_selection}/history_{_hash}.csv.xz",
         "model_performance/{cell_line}/{task}/{model_name}/{use_feature_selection}/performance_{_hash}.csv.xz"
     ],
-    args_to_ignore=[
-        "model", "training_sequence", "test_sequence"
-    ]
+    args_to_ignore=["model", "training_sequence", "test_sequence"]
 )
 def train_model(
     model: Model,
@@ -35,7 +30,9 @@ def train_model(
     test_sequence: MixedSequence,
     holdout_number: int,
     use_feature_selection: bool,
-    start_time: time) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    start_time: time
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+
     """Returns training history and model evaluations.
     
     Parameters
@@ -62,6 +59,7 @@ def train_model(
     ----------------------
     Tuple with training history dataframe and model evaluations dataframe.
     """
+
     history = pd.DataFrame(model.fit(
         train_sequence,
         validation_data=test_sequence,
