@@ -10,6 +10,18 @@ from utils.bio_constants import GENOME_CACHE_DIR
 import pandas as pd
 import numpy as np
 
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import EarlyStopping
+
+from typing import Dict, List, Tuple, Optional, Union
+
+
+from utils.data_processing import *
+
+from pathlib import Path
+from datetime import datetime
+import time
+
 
 def get_cnn_sequence(
         genome: Genome,
@@ -152,9 +164,7 @@ def get_mmnn_sequence(
         "boruta/mmnn/kept_features_{_hash}.json",
         "boruta/mmnn/discarded_features_{_hash}.json"
     ],
-    args_to_ignore=[
-        "X_train", "y_train"
-    ]
+    args_to_ignore=["X_train", "y_train"]
 )
 def execute_boruta_feature_selection(
         X_train: pd.DataFrame,
@@ -181,9 +191,9 @@ def execute_boruta_feature_selection(
     Returns
     -------
     kept_features: list(),
-      List of indices referring to the features to be maintained.
+        List of indices referring to the features to be maintained.
     discarded_features: list(),
-      List of indices referring to the features to be eliminated.
+        List of indices referring to the features to be eliminated.
     """
 
     model = RandomForestClassifier(n_jobs=cpu_count(), class_weight='balanced_subsample', max_depth=5)
