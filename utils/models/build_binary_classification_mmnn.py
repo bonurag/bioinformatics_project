@@ -11,8 +11,11 @@ from utils.bio_constants import MMNN_SIMPLE, MMNN_BOOST
 from utils.models.build_binary_classification_cnn import build_binary_classification_cnn
 from utils.models.build_binary_classification_ffnn import build_binary_classification_ffnn
 
+
 def build_binary_classification_mmnn(
-        hp_param: dict(),
+        hp_param_mmnn: dict(),
+        hp_param_ffnn: Optional[dict] = None,
+        hp_param_cnn: Optional[dict] = None,
         input_shape: Optional[int] = None,
         window_size: Optional[int] = None,
         input_epigenomic_data: Optional[Layer] = None,
@@ -71,8 +74,8 @@ def build_binary_classification_mmnn(
     Triple with model, input layer and output layer.
     """
 
-    learning_rate = hp_param.get("learning_rate")
-    n_neurons_concat = hp_param.get("n_neurons_concat")
+    learning_rate = hp_param_mmnn.get("learning_rate")
+    n_neurons_concat = hp_param_mmnn.get("n_neurons_concat")
 
     if input_shape is None and (last_hidden_ffnn is None or input_epigenomic_data is None):
         raise ValueError(
@@ -85,11 +88,11 @@ def build_binary_classification_mmnn(
             "layer must be provided."
         )
 
-    if input_shape is not None:
-        _, input_epigenomic_data, last_hidden_ffnn = build_binary_classification_ffnn(input_shape)
+    if input_shape is not None and hp_param_ffnn is not None:
+        _, input_epigenomic_data, last_hidden_ffnn = build_binary_classification_ffnn(input_shape, hp_param_ffnn)
 
-    if window_size is not None:
-        _, input_sequence_data, last_hidden_cnn = build_binary_classification_cnn(window_size)
+    if window_size is not None and hp_param_cnn is not None:
+        _, input_sequence_data, last_hidden_cnn = build_binary_classification_cnn(window_size, hp_param_cnn)
 
     concatenation_layer = Concatenate()([
         last_hidden_ffnn,

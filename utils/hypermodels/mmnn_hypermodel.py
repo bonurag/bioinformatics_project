@@ -2,9 +2,9 @@ from tensorflow.keras.layers import Dense, Concatenate
 from tensorflow.keras import optimizers
 from tensorflow.keras.models import Model
 from extra_keras_metrics import get_complete_binary_metrics
-from kerastuner import HyperModel
+from keras_tuner import HyperModel
 
-from utils.bio_constants import MMNN_NAME
+from utils.bio_constants import MMNN_NAME_HP
 
 
 class MMNNHyperModel(HyperModel):
@@ -23,7 +23,7 @@ class MMNNHyperModel(HyperModel):
         last_hidden_mmnn = Dense(n_neurons_concat, activation="relu", name="First_Hidden_Layer")(concatenation_layer)
         output_mmnn = Dense(1, activation="sigmoid", name="Output_Layer")(last_hidden_mmnn)
 
-        model = Model(inputs=[self.input_epigenomic_data, self.input_sequence_data], outputs=output_mmnn, name=MMNN_NAME)
+        model = Model(inputs=[self.input_epigenomic_data, self.input_sequence_data], outputs=output_mmnn, name=MMNN_NAME_HP)
         model.compile(
             optimizer=optimizers.Nadam(learning_rate=learning_rate),
             loss="binary_crossentropy",
