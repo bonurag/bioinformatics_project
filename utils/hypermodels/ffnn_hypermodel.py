@@ -2,9 +2,9 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras import optimizers
 from extra_keras_metrics import get_complete_binary_metrics
-from kerastuner import HyperModel
+from keras_tuner import HyperModel
 
-from utils.bio_constants import FFNN_NAME
+from utils.bio_constants import FFNN_NAME_HP
 
 
 class FFNNHyperModel(HyperModel):
@@ -51,7 +51,7 @@ class FFNNHyperModel(HyperModel):
 
         output_ffnn = Dense(1, activation="sigmoid")(last_hidden_ffnn)
 
-        model = Model(inputs=input_epigenomic_data, outputs=output_ffnn, name=FFNN_NAME)
+        model = Model(inputs=input_epigenomic_data, outputs=output_ffnn, name=FFNN_NAME_HP)
 
         model.compile(
             loss="binary_crossentropy",

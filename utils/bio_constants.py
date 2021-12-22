@@ -26,7 +26,7 @@ HP_MAX_EPOCHS_MMNN = 25
 # DATA
 # ===============
 
-HOLDOUTS_NUM_SPLIT = 2
+HOLDOUTS_NUM_SPLIT = 10
 TEST_SIZE = 0.2
 
 # ===============
@@ -41,18 +41,20 @@ GENOME_CACHE_DIR = "/bio_data/genomes"
 # FFNN
 # ===============
 
-FFNN_NAME = "ffnn_hp"
+FFNN_NAME_HP = "ffnn_hp"
+FFNN_NAME = "BinaryClassificationFFNN"
 
 # ===============
 # CNN
 # ===============
 
-CNN_NAME = "cnn_hp"
+CNN_NAME_HP = "ffnn_hp"
+CNN_NAME = "BinaryClassificationCNN"
 
 # ===============
 # MMNN
 # ===============
 
-MMNN_NAME = "mmnn_hp"
+MMNN_NAME_HP = "mmnn_hp"
 MMNN_SIMPLE = "MMNN"
 MMNN_BOOST = "BoostedMMNN"

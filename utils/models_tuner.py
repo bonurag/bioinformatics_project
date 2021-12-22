@@ -8,7 +8,7 @@ from utils.bio_constants import *
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
-from loguru import logger
+#from loguru import logger
 from typing import Optional
 
 from keras_tuner import Hyperband
@@ -89,22 +89,23 @@ def hyperparameter_tuning(
         directory = TUNER_DIR_MMNN
 
     tuners = define_tuners(hypermodel,
-                           max_epochs=max_epochs,
-                           directory=directory,
-                           project_name=project_name)
+                            max_epochs=max_epochs,
+                            directory=directory,
+                            project_name=project_name)
 
     for tuner in tuners:
         hyperparam_results = tuner_evaluation(tuner,
-                                              train_X,
-                                              test_X,
-                                              train_y,
-                                              test_y,
-                                              train_bed,
-                                              test_bed,
-                                              genome,
-                                              task_name,
-                                              holdout_number,
-                                              model_name)
+                                                train_X,
+                                                test_X,
+                                                train_y,
+                                                test_y,
+                                                train_bed,
+                                                test_bed,
+                                                genome,
+                                                task_name,
+                                                holdout_number,
+                                                model_name
+    )
 
     return hyperparam_results
 
@@ -117,7 +118,7 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
     global train_search_seq, valid_search_seq
     model = None
 
-    logger.info(f"Start hyperparameter tuning for {model_name}")
+    #logger.info(f"Start hyperparameter tuning for {model_name}")
 
     if model_name == MODEL_TYPE_FFNN:
         train_search_seq = get_ffnn_sequence(train_X, train_y)
@@ -130,11 +131,11 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
         valid_search_seq = get_mmnn_sequence(genome, test_bed, test_X, test_y)
 
     tuner.search(train_search_seq,
-                 validation_data=valid_search_seq,
-                 epochs=200,
-                 batch_size=256,
-                 callbacks=[EarlyStopping(monitor="val_loss", patience=3, verbose=1)]
-                 )
+                    validation_data=valid_search_seq,
+                    epochs=200,
+                    batch_size=256,
+                    callbacks=[EarlyStopping(monitor="val_loss", patience=3, verbose=1)]
+    )
 
     # Show a summary of the search
     # tuner.results_summary()

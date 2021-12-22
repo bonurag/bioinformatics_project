@@ -3,9 +3,9 @@ from tensorflow.keras.layers import Input, Dense, Dropout, BatchNormalization, R
 from tensorflow.keras.layers import Conv1D, MaxPool1D, GlobalAveragePooling1D
 from tensorflow.keras import optimizers
 from extra_keras_metrics import get_complete_binary_metrics
-from kerastuner import HyperModel
+from keras_tuner import HyperModel
 
-from utils.bio_constants import CNN_NAME
+from utils.bio_constants import CNN_NAME_HP
 
 
 class CNNHyperModel(HyperModel):
@@ -49,7 +49,7 @@ class CNNHyperModel(HyperModel):
         last_hidden_cnn = Dense(n_neurons_last_out, activation="relu", name="last_hidden_cnn")(hidden)
         output_cnn = Dense(1, activation="sigmoid", name="output_cnn")(last_hidden_cnn)
 
-        model = Model(inputs=input_sequence_data, outputs=output_cnn, name=CNN_NAME)
+        model = Model(inputs=input_sequence_data, outputs=output_cnn, name=CNN_NAME_HP)
 
         model.compile(
             loss="binary_crossentropy",

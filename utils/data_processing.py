@@ -157,12 +157,8 @@ def get_mmnn_sequence(
 
 @Cache(
     cache_path=[
-        "boruta/ffnn/kept_features_{_hash}.json",
-        "boruta/ffnn/discarded_features_{_hash}.json",
-        "boruta/cnn/kept_features_{_hash}.json",
-        "boruta/cnn/discarded_features_{_hash}.json",
-        "boruta/mmnn/kept_features_{_hash}.json",
-        "boruta/mmnn/discarded_features_{_hash}.json"
+        "boruta/kept_features_{_hash}.json",
+        "boruta/discarded_features_{_hash}.json"
     ],
     args_to_ignore=["X_train", "y_train"]
 )

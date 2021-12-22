@@ -19,14 +19,14 @@ import time
         "model_histories/{cell_line}/{task}/{model_name}/{use_feature_selection}/history_{_hash}.csv.xz",
         "model_performance/{cell_line}/{task}/{model_name}/{use_feature_selection}/performance_{_hash}.csv.xz"
     ],
-    args_to_ignore=["model", "training_sequence", "test_sequence"]
+    args_to_ignore=["model", "train_sequence", "test_sequence"]
 )
 def train_model(
     model: Model,
     model_name: str,
     task: str,
     cell_line: str,
-    training_sequence: MixedSequence,
+    train_sequence: MixedSequence,
     test_sequence: MixedSequence,
     holdout_number: int,
     use_feature_selection: bool,
