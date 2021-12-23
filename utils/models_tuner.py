@@ -8,7 +8,7 @@ from utils.bio_constants import *
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
-#from loguru import logger
+from loguru import logger
 from typing import Optional
 
 from keras_tuner import Hyperband
@@ -77,8 +77,8 @@ def hyperparameter_tuning(
         directory = TUNER_DIR_CNN
     elif model_name == MODEL_TYPE_MMNN:
         if input_layers and hidden_layers:
-            print(f"model_name: {model_name} input_layers: {input_layers} hidden_layers: {hidden_layers}")
-            print(input_layers.get("input_epigenomic_data"))
+            #print(f"model_name: {model_name} input_layers: {input_layers} hidden_layers: {hidden_layers}")
+            #print(input_layers.get("input_epigenomic_data"))
             hypermodel = mmnn_hypermodel.MMNNHyperModel(input_layers.get("input_epigenomic_data"),
                                                         input_layers.get("input_sequence_data"),
                                                         hidden_layers.get("last_hidden_ffnn"),
@@ -145,12 +145,12 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
     model = tuner.hypermodel.build(best_hps)
 
     if model_name == MODEL_TYPE_FFNN:
-        print(f"Get Layer From {model_name} Models!")
+        #print(f"Get Layer From {model_name} Models!")
         input_epigenomic_data = model[1]
         last_hidden_ffnn = model[2]
 
     if model_name == MODEL_TYPE_CNN:
-        print(f"Get Layer From {model_name} Models!")
+        #print(f"Get Layer From {model_name} Models!")
         input_sequence_data = model[1]
         last_hidden_cnn = model[2]
 
