@@ -119,7 +119,6 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
     model = None
 
     #logger.info(f"Start hyperparameter tuning for {model_name}")
-
     if model_name == MODEL_TYPE_FFNN:
         train_search_seq = get_ffnn_sequence(train_X, train_y)
         valid_search_seq = get_ffnn_sequence(test_X, test_y)
@@ -150,6 +149,7 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
         last_hidden_ffnn = model[2]
 
     if model_name == MODEL_TYPE_CNN:
+        model.summary()
         #print(f"Get Layer From {model_name} Models!")
         input_sequence_data = model[1]
         last_hidden_cnn = model[2]

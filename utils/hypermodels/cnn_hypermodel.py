@@ -57,4 +57,4 @@ class CNNHyperModel(HyperModel):
             metrics=get_complete_binary_metrics()
         )
 
-        return model, input_sequence_data, last_hidden_cnn
+        return model

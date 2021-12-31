@@ -16,7 +16,7 @@ class FFNNHyperModel(HyperModel):
         n_neurons0 = hp.Int(name="n_neurons0", min_value=32, max_value=256, step=32)
         learning_rate = hp.Choice(name="learning_rate", values=[1e-2, 1e-4])
 
-        input_epigenomic_data = Input((self.input_shape,), name="input_epigenomic_data")
+        input_epigenomic_data = Input(shape=(self.input_shape,), name="input_epigenomic_data")
         last_hidden_ffnn = hidden = input_epigenomic_data
 
         for layer in range(num_layers):
@@ -59,4 +59,4 @@ class FFNNHyperModel(HyperModel):
             metrics=get_complete_binary_metrics()
         )
 
-        return model, input_epigenomic_data, last_hidden_ffnn
+        return model
