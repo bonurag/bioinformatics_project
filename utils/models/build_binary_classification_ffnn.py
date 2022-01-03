@@ -58,9 +58,11 @@ def build_binary_classification_ffnn(
 
     output_ffnn = Dense(1, activation="sigmoid")(last_hidden_ffnn)
 
-    ffnn = Model(inputs=input_epigenomic_data,
-                  outputs=output_ffnn,
-                  name=FFNN_NAME)
+    ffnn = Model(
+        inputs=input_epigenomic_data,
+        outputs=output_ffnn,
+        name=FFNN_NAME
+    )
 
     ffnn.compile(
         optimizer=optimizers.Nadam(learning_rate=learning_rate),

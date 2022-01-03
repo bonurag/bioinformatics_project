@@ -59,4 +59,4 @@ class FFNNHyperModel(HyperModel):
             metrics=get_complete_binary_metrics()
         )
 
-        return model
+        return model, input_epigenomic_data, last_hidden_ffnn
