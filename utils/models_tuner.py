@@ -145,14 +145,15 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
 
     if model_name == MODEL_TYPE_FFNN:
         #print(f"Get Layer From {model_name} Models!")
-        input_epigenomic_data = model[1]
-        last_hidden_ffnn = model[2]
+        if model is not None:
+            input_epigenomic_data = model[1]
+            last_hidden_ffnn = model[2]
 
     if model_name == MODEL_TYPE_CNN:
-        model.summary()
         #print(f"Get Layer From {model_name} Models!")
-        input_sequence_data = model[1]
-        last_hidden_cnn = model[2]
+        if model is not None:
+            input_sequence_data = model[1]
+            last_hidden_cnn = model[2]
 
     results = {
         "task_name": task_name,
