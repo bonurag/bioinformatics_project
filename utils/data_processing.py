@@ -288,27 +288,7 @@ def save_picture(path: str, fig_name: str, figure: Figure):
     figure.savefig(path+f"/{fig_name}.PNG", bbox_inches='tight')
 
 
-def clean(path: str, endswith: str=".png"):
-    """
-    Use for delete dirty file in specific directory with specific endswith.
-
-    Parameters
-    -------------------------
-    path: str,
-        Directory used for save Figure.
-    endswith: str,
-        Text used as endswith.
-
-    Returns
-    -------------------------
-    """
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith(endswith):
-                os.remove(os.path.join(root, file))
-
-
-def generate_plotbars(inputData: pd.DataFrame, path: str = "barplots/"):
+def generate_plotbars(inputData: pd.DataFrame):
     """
     Use for generate plotbars providing input tha performace dataframe.
 
@@ -316,32 +296,16 @@ def generate_plotbars(inputData: pd.DataFrame, path: str = "barplots/"):
     -------------------------
     inputData: pd.DataFrame,
         DataFrame that contains all performance.
-    path: str,
-        TDirectory used for save plot.
-
+        
     Returns
     -------------------------
     """
-    for task in inputData.task.unique():
-        directory = path+task
-        if directory:
-            os.makedirs(directory, exist_ok=True)
-            column_to_filter = ["model_name", "loss", "accuracy", "AUROC", "AUPRC", "use_feature_selection", "run_type"]
-            task_name = "enhancers" if task == "active_enhancers_vs_inactive_enhancers" else "promoters"
-            figures = barplots(
-                            inputData[column_to_filter],
-                            groupby=["model_name", "use_feature_selection", "run_type"],
-                            orientation="horizontal",
-                            height=8,
-                            bar_width=0.2,
-                            path=directory+"/_"
-                        )
 
-            figure, axis = figures
-            for figure, axis in zip(figure, axis):
-                task_name = "enhancers" if task == "active_enhancers_vs_inactive_enhancers" else "promoters"
-                figure_name = axis[0].title.get_text()+"_"+task_name
-                save_picture(directory, figure_name, figure)
-        clean(directory, "_.png")
-
-
+    column_to_filter = ["model_name", "loss", "accuracy", "AUROC", "AUPRC", "use_feature_selection", "run_type"]
+    barplots(
+                inputData[column_to_filter],
+                groupby=["model_name", "use_feature_selection", "run_type"],
+                orientation="horizontal",
+                height=8,
+                bar_width=0.2
+            )
