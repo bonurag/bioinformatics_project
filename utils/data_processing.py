@@ -13,17 +13,14 @@ from sklearn.preprocessing import RobustScaler
 import pandas as pd
 import numpy as np
 
-from tensorflow.keras.models import Model
-from tensorflow.keras.callbacks import EarlyStopping
-
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple
 
 from utils.data_processing import *
 
-from pathlib import Path
-from datetime import datetime
-import time
+from matplotlib.figure import Figure
+import os
 
+from barplots import barplots
 
 def get_cnn_sequence(
         genome: Genome,
@@ -272,3 +269,43 @@ def normalize_epigenomic_data(
         # Return the normalized data
         return scaled_train_x, scaled_test_x
     return scaled_train_x
+
+
+def save_picture(path: str, fig_name: str, figure: Figure):
+    directory = os.path.dirname(path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    figure.savefig(path+f"/{fig_name}.PNG", bbox_inches='tight')
+
+
+def clean(path: str):
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith("_.png"):
+                os.remove(os.path.join(root, file))
+
+
+def generate_plotbars(inputData: pd.DataFrame, path: str = "barplots/"):
+    for task in inputData.task.unique():
+        directory = path+task
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+            column_to_filter = ["model_name", "loss", "accuracy", "AUROC", "AUPRC", "use_feature_selection", "run_type"]
+            task_name = "enhancers" if task == "active_enhancers_vs_inactive_enhancers" else "promoters"
+            figures = barplots(
+                            inputData[column_to_filter],
+                            groupby=["model_name", "use_feature_selection", "run_type"],
+                            orientation="horizontal",
+                            height=8,
+                            bar_width=0.2,
+                            path=directory+"/_"
+                        )
+
+            figure, axis = figures
+            for figure, axis in zip(figure, axis):
+                task_name = "enhancers" if task == "active_enhancers_vs_inactive_enhancers" else "promoters"
+                figure_name = axis[0].title.get_text()+"_"+task_name
+                save_picture(directory, figure_name, figure)
+        clean(directory)
+
+
