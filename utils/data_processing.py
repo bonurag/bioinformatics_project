@@ -1,26 +1,27 @@
-from sklearn.ensemble import RandomForestClassifier
-from boruta import BorutaPy
-from keras_mixed_sequence import MixedSequence, VectorSequence
-from keras_bed_sequence import BedSequence
+import os
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Tuple
 from cache_decorator import Cache
 from multiprocessing import cpu_count
-from ucsc_genomes_downloader import Genome
-from utils.bio_constants import GENOME_CACHE_DIR
 
+from boruta import BorutaPy
+
+from keras_mixed_sequence import MixedSequence, VectorSequence
+from keras_bed_sequence import BedSequence
+
+from ucsc_genomes_downloader import Genome
+
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import RobustScaler
 
-import pandas as pd
-import numpy as np
-
-from typing import Dict, List, Tuple
-
-from utils.data_processing import *
-
 from matplotlib.figure import Figure
-import os
 
 from barplots import barplots
+
+from utils.data_processing import *
+from utils.bio_constants import GENOME_CACHE_DIR
 
 def get_cnn_sequence(
         genome: Genome,
@@ -223,12 +224,6 @@ def to_bed(data: pd.DataFrame) -> pd.DataFrame:
 def get_genome() -> Genome:
     return Genome("hg38", cache_directory=GENOME_CACHE_DIR)
 
-"""Module providing normalization for epigenomic data."""
-from typing import Tuple
-import numpy as np
-from sklearn.impute import KNNImputer
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-
 
 def normalize_epigenomic_data(
     train_x: np.ndarray,
@@ -272,20 +267,61 @@ def normalize_epigenomic_data(
 
 
 def save_picture(path: str, fig_name: str, figure: Figure):
+    """
+    Use for save Figure that return from barplots function.
+
+    Parameters
+    -------------------------
+    path: str,
+        Directory used for save Figure.
+    fig_name: str,
+        Name to give to the image to save.
+    figure: Figure,
+        Figure object that contain barplot picture to save.
+
+    Returns
+    -------------------------
+    """
     directory = os.path.dirname(path)
     if directory:
         os.makedirs(directory, exist_ok=True)
     figure.savefig(path+f"/{fig_name}.PNG", bbox_inches='tight')
 
 
-def clean(path: str):
+def clean(path: str, endswith: str=".png"):
+    """
+    Use for delete dirty file in specific directory with specific endswith.
+
+    Parameters
+    -------------------------
+    path: str,
+        Directory used for save Figure.
+    endswith: str,
+        Text used as endswith.
+
+    Returns
+    -------------------------
+    """
     for root, dirs, files in os.walk(path):
         for file in files:
-            if file.endswith("_.png"):
+            if file.endswith(endswith):
                 os.remove(os.path.join(root, file))
 
 
 def generate_plotbars(inputData: pd.DataFrame, path: str = "barplots/"):
+    """
+    Use for generate plotbars providing input tha performace dataframe.
+
+    Parameters
+    -------------------------
+    inputData: pd.DataFrame,
+        DataFrame that contains all performance.
+    path: str,
+        TDirectory used for save plot.
+
+    Returns
+    -------------------------
+    """
     for task in inputData.task.unique():
         directory = path+task
         if directory:
@@ -306,6 +342,6 @@ def generate_plotbars(inputData: pd.DataFrame, path: str = "barplots/"):
                 task_name = "enhancers" if task == "active_enhancers_vs_inactive_enhancers" else "promoters"
                 figure_name = axis[0].title.get_text()+"_"+task_name
                 save_picture(directory, figure_name, figure)
-        clean(directory)
+        clean(directory, "_.png")
 
 
