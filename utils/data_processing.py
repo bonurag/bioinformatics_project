@@ -266,28 +266,6 @@ def normalize_epigenomic_data(
     return scaled_train_x
 
 
-def save_picture(path: str, fig_name: str, figure: Figure):
-    """
-    Use for save Figure that return from barplots function.
-
-    Parameters
-    -------------------------
-    path: str,
-        Directory used for save Figure.
-    fig_name: str,
-        Name to give to the image to save.
-    figure: Figure,
-        Figure object that contain barplot picture to save.
-
-    Returns
-    -------------------------
-    """
-    directory = os.path.dirname(path)
-    if directory:
-        os.makedirs(directory, exist_ok=True)
-    figure.savefig(path+f"/{fig_name}.PNG", bbox_inches='tight')
-
-
 def generate_plotbars(inputData: pd.DataFrame):
     """
     Use for generate plotbars providing input tha performace dataframe.
