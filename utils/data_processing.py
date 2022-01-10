@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple
@@ -16,12 +15,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import RobustScaler
 
-from matplotlib.figure import Figure
+from sklearn.decomposition import PCA
+from MulticoreTSNE import MulticoreTSNE as UTSNE
 
 from barplots import barplots
 
 from utils.data_processing import *
-from utils.bio_constants import GENOME_CACHE_DIR
+from utils.bio_constants import GENOME_CACHE_DIR, WINDOW_SIZE
 
 def get_cnn_sequence(
         genome: Genome,
@@ -219,6 +219,101 @@ def execute_boruta_feature_selection(
 def to_bed(data: pd.DataFrame) -> pd.DataFrame:
     """Return bed coordinates from given dataset."""
     return data.reset_index()[data.index.names]
+
+
+def one_hot_encode(genome:Genome, data:pd.DataFrame, nucleotides:str="actg")->np.ndarray:
+    return np.array(BedSequence(
+        genome,
+        bed=to_bed(data),
+        nucleotides=nucleotides,
+        batch_size=1
+    ))
+
+
+def flat_one_hot_encode(genome:Genome, data:pd.DataFrame, window_size:int, nucleotides:str="actg")->np.ndarray:
+    return one_hot_encode(genome, data, nucleotides).reshape(-1, WINDOW_SIZE*4).astype(int)
+
+
+def to_dataframe(x:np.ndarray, window_size:int, nucleotides:str="actg")->pd.DataFrame:
+    return pd.DataFrame(
+        x,
+        columns = [
+            f"{i}{nucleotide}"
+            for i in range(WINDOW_SIZE)
+            for nucleotide in nucleotides
+        ]
+    )
+
+
+def drop_constant_features(df:pd.DataFrame)->pd.DataFrame:
+    """Return DataFrame without constant features."""
+    return df.loc[:, (df != df.iloc[0]).any()]
+
+
+def knn_imputation(df:pd.DataFrame, neighbours:int=5)->pd.DataFrame:
+    """Return provided dataframe with NaN imputed using knn.
+
+    Parameters
+    --------------------
+    df:pd.DataFrame,
+        The dataframe to impute.
+    neighbours:int=5,
+        The number of neighbours to consider.
+
+    Returns
+    --------------------
+    The dataframe with the NaN values imputed.
+    """
+    return pd.DataFrame(
+        KNNImputer(n_neighbors=neighbours).fit_transform(df.values),
+        columns=df.columns,
+        index=df.index
+    )
+
+def robust_zscoring(df:pd.DataFrame)->pd.DataFrame:
+    return pd.DataFrame(
+        RobustScaler().fit_transform(df.values),
+        columns=df.columns,
+        index=df.index
+    )
+
+
+def get_top_most_different(dist, n:int):
+    return np.argsort(-np.mean(dist, axis=1).flatten())[:n]
+
+
+def get_features_filter(X:pd.DataFrame, y:pd.DataFrame, name:str)->BorutaPy:
+    boruta_selector = BorutaPy(
+        RandomForestClassifier(n_jobs=cpu_count(), class_weight='balanced', max_depth=5),
+        n_estimators='auto',
+        verbose=2,
+        alpha=0.05, # p_value
+        max_iter=30, # In practice one would run at least 100-200 times
+        random_state=42
+    )
+    boruta_selector.fit(X.values, y.values.ravel())
+    return boruta_selector
+
+
+def pca(x:np.ndarray, n_components:int=2)->np.ndarray:
+    return PCA(n_components=n_components, random_state=42).fit_transform(x)
+
+
+def ulyanov_tsne(
+    x: np.ndarray,
+    perplexity: int,
+    dimensionality_threshold: int = 50,
+    n_components: int = 2
+):
+    if x.shape[1] > dimensionality_threshold:
+        x = pca(x, n_components=dimensionality_threshold)
+    return UTSNE(
+        n_components=n_components,
+        perplexity=perplexity,
+        n_jobs=cpu_count(),
+        random_state=42,
+        verbose=True
+    ).fit_transform(x)
 
 
 def get_genome() -> Genome:
