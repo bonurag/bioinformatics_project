@@ -1,14 +1,11 @@
 from ucsc_genomes_downloader import Genome
 
-from typing import Tuple
+from typing import Dict
 from utils.hypermodels import ffnn_hypermodel, cnn_hypermodel, mmnn_hypermodel
 from utils.data_processing import get_ffnn_sequence, get_cnn_sequence, get_mmnn_sequence
 from utils.bio_constants import *
 
-from tensorflow.keras.layers import Layer
-from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
-from loguru import logger
 from typing import Optional
 
 from keras_tuner import Hyperband
@@ -35,8 +32,9 @@ def hyperparameter_tuning(
         model_name: str,
         input_layers: Optional[list] = None,
         hidden_layers: Optional[list] = None
-)-> Tuple[Model, Layer, Layer]:
-    """Returns tuple with list of kept features and list of discared features.
+)-> Dict:
+    """Return model resulting from hyperparameter optimization, and dictionary
+        that contains best hyperparamters results.
 
     Parameters
     --------------------------
@@ -48,16 +46,28 @@ def hyperparameter_tuning(
         The values the model should predict during the training phase.
     test_y: np.ndarray,
         The values the model should predict during the test phase.
+    train_bed: pd.DataFrame,
+        The train BED file coordinates describing where to extract the sequences.
+    test_bed: pd.DataFrame,
+        The test BED file coordinates describing where to extract the sequences.
+    genome: Genome,
+        The genome from where to extract the genomic sequence.
+    window_size: int,
+        Size of the input genomic window.
     holdout_number: int,
         The current holdout number.
     task_name: str,
         The name of the task.
     model_name: str,
         The name of the model.
+    input_layers: list,
+        List of input layer for FFNN and CNN.
+    hidden_layers: list,
+        List of last hidden layer for FFNN and CNN.
 
     Returns
     -------
-    Return FFNN model resulting from hyperparameter optimization, and dictionary
+    Return model resulting from hyperparameter optimization, and dictionary
     that contains best hyperparamters results.
     """
 
@@ -111,14 +121,10 @@ def hyperparameter_tuning(
 
 
 def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_bed, genome, task_name, holdout_number, model_name):
-    # Overview of the task
-    # tuner.search_space_summary()
-
     # Performs the hyperparameter tuning
     global train_search_seq, valid_search_seq
     model = None
 
-    #logger.info(f"Start hyperparameter tuning for {model_name}")
     if model_name == MODEL_TYPE_FFNN:
         train_search_seq = get_ffnn_sequence(train_X, train_y)
         valid_search_seq = get_ffnn_sequence(test_X, test_y)
@@ -135,9 +141,6 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
                     batch_size=256,
                     callbacks=[EarlyStopping(monitor="val_loss", patience=3, verbose=1)]
     )
-
-    # Show a summary of the search
-    # tuner.results_summary()
 
     # Retrieve the best hyperparameters.
     best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
@@ -188,6 +191,23 @@ def tuner_evaluation(tuner, train_X, test_X, train_y, test_y, train_bed, test_be
 
 
 def define_tuners(hypermodel, max_epochs, directory, project_name):
+    """Return an instance of Hyperband.
+
+    Parameters
+    --------------------------
+    hypermodel: hypermodel,
+        Deep neural network hypermodel.
+    max_epochs: int,
+        The max number of epoch.
+    directory: str,
+        A path to a directory for storing the search results.
+    project_name: str,
+        The name of the sub-directory in the directory.
+
+    Returns
+    -------
+    Return an instance of Hyperband.
+    """
     hyperband_tuner = Hyperband(
         hypermodel,
         max_epochs=max_epochs,

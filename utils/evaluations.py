@@ -3,14 +3,12 @@ from cache_decorator import Cache
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
 
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Tuple
 
 from keras_mixed_sequence import MixedSequence
 
 from utils.data_processing import *
 
-from pathlib import Path
-from datetime import datetime
 import time
 
 
@@ -54,7 +52,9 @@ def train_model(
     use_feature_selection: bool,
         Whether the model is trained using features that have
         been selected with Boruta or not.
-
+    start_time: time,
+        Instance of time used for measured the elapsed time of each invoke of train model.
+        
     Returns
     ----------------------
     Tuple with training history dataframe and model evaluations dataframe.
