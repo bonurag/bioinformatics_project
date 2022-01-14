@@ -13,6 +13,18 @@ class CNNHyperModel(HyperModel):
         self.window_size = window_size
 
     def build(self, hp):
+        """Returns CNN model with input laye and output layer.
+
+        Parameters
+        --------------------------
+        hp: HyperParameters ,
+            HyperParameters instance can be pass to as an argument to build a model.
+
+        Returns
+        -------
+        Returns CNN model with input laye and output layer.
+        """
+        
         num_conv_layers = hp.Int(name="num_conv_layers", min_value=2, max_value=8, step=1)
         n_neurons0 = hp.Int(name="n_neurons0", min_value=32, max_value=128, step=32)
         kernel_size0 = hp.Int(name="kernel_size0", min_value=5, max_value=8)

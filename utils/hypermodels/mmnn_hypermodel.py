@@ -15,6 +15,18 @@ class MMNNHyperModel(HyperModel):
         self.last_hidden_cnn = last_hidden_cnn
 
     def build(self, hp):
+        """Returns MMNN model with input laye and output layer.
+
+        Parameters
+        --------------------------
+        hp: HyperParameters ,
+            HyperParameters instance can be pass to as an argument to build a model.
+
+        Returns
+        -------
+        Returns MMNN model with input laye and output layer.
+        """
+        
         n_neurons_concat = hp.Int(name="n_neurons_concat", min_value=32, max_value=256, step=32)
         learning_rate = hp.Choice("learning_rate", values=[1e-2, 1e-4])
 

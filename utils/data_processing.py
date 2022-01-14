@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Tuple
+from typing import Tuple
 from cache_decorator import Cache
 from multiprocessing import cpu_count
 
@@ -296,6 +296,22 @@ def get_features_filter(X:pd.DataFrame, y:pd.DataFrame, name:str)->BorutaPy:
 
 
 def pca(x:np.ndarray, n_components:int=2)->np.ndarray:
+    """Return PCA decomposition.
+
+    We fit the imputation and normalization on the training data and
+    apply it to both the training data and the test data.
+
+    Parameters
+    -------------------------
+    x: np.ndarray,
+        Input data on which to apply the pca.
+    n_components: np.ndarray = None,
+        Number of components to keep.
+
+    Returns
+    -------------------------
+    Return PCA decomposition.
+    """
     return PCA(n_components=n_components, random_state=42).fit_transform(x)
 
 
@@ -317,6 +333,12 @@ def ulyanov_tsne(
 
 
 def get_genome() -> Genome:
+    """Return Genome.
+
+    Returns
+    -------------------------
+    Genome.
+    """
     return Genome("hg38", cache_directory=GENOME_CACHE_DIR)
 
 
@@ -362,8 +384,7 @@ def normalize_epigenomic_data(
 
 
 def generate_plotbars(inputData: pd.DataFrame):
-    """
-    Use for generate plotbars providing input tha performace dataframe.
+    """Return
 
     Parameters
     -------------------------

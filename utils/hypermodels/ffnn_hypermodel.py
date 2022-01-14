@@ -12,6 +12,18 @@ class FFNNHyperModel(HyperModel):
         self.input_shape = input_shape
 
     def build(self, hp):
+        """Returns FFNN model with input laye and output layer.
+
+        Parameters
+        --------------------------
+        hp: HyperParameters ,
+            HyperParameters instance can be pass to as an argument to build a model.
+
+        Returns
+        -------
+        Returns FFNN model with input laye and output layer.
+        """        
+
         num_layers = hp.Int(name="num_layers", min_value=2, max_value=6)
         n_neurons0 = hp.Int(name="n_neurons0", min_value=32, max_value=256, step=32)
         learning_rate = hp.Choice(name="learning_rate", values=[1e-2, 1e-4])
